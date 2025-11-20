@@ -57,6 +57,8 @@
         <th>姓名</th>
         <th>Email</th>
         <th>報名時間</th>
+        <th>電話</th>
+        <th>操作</th>
       </tr>
     </thead>
     <tbody id="tbody">
@@ -94,7 +96,9 @@
             <td>${row.id}</td>
             <td>${row.name}</td>
             <td>${row.email}</td>
+            <td>${row.phone || ""}</td>
             <td>${row.created_at}</td>
+            <td><button data-id="${row.id}">刪除</button></td>
           `;
           tbody.appendChild(tr);
         }
@@ -107,6 +111,32 @@
     }
 
     loadData();
+
+    tbody.addEventListener('click', async (e) => {
+  if (e.target.tagName !== 'BUTTON') return;
+  const id = e.target.getAttribute('data-id');
+  if (!confirm(`確定要刪除編號 ${id} 嗎？`)) return;
+
+  try {
+    const res = await fetch('/api/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      alert(data.error || '刪除失敗');
+      return;
+    }
+
+    // 刪除成功後重新載入列表
+    await loadData();
+  } catch (err) {
+    console.error(err);
+    alert('刪除時發生錯誤');
+  }
+});
   </script>
 </body>
 </html>

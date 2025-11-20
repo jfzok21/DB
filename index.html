@@ -27,9 +27,13 @@
       姓名
       <input type="text" name="name" required>
     </label>
-    <label>
+    <!-- <label>
       Email
       <input type="email" name="email" required>
+    </label> -->
+    <label>
+      電話
+      <input type="text" name="phone">
     </label>
     <button type="submit">送出報名</button>
   </form>
@@ -62,7 +66,8 @@
       const formData = new FormData(form);
       const body = {
         name: formData.get('name'),
-        email: formData.get('email')
+        email: formData.get('email'),
+        phone: formData.get('phone')  // 新增
       };
 
       try {

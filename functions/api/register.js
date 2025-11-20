@@ -11,7 +11,8 @@ export async function onRequest(context) {
 
   const body = await request.json();
   const name = (body.name || "").trim();
-  const email = (body.email || "").trim();
+  // const email = (body.email || "").trim();
+  const phone = (body.phone || "").trim();
   const now = Date.now();
 
   if (!name || !email) {
@@ -41,8 +42,8 @@ export async function onRequest(context) {
 
   try {
     await env.DB.prepare(
-      "INSERT INTO registrations (name, email, created_at) VALUES (?, ?, ?)"
-    ).bind(name, email, now).run();
+    "INSERT INTO registrations (name, email, phone, created_at) VALUES (?, ?, ?, ?)"
+    ).bind(name, email, phone, now).run();
   } catch (e) {
     return new Response(
       JSON.stringify({ success: false, error: "Email 已存在" }),
