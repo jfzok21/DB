@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>活動報名</title>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 480px; margin: 40px auto; padding: 0 16px; }
+    h1 { text-align: center; }
+    .info { margin-bottom: 16px; }
+    label { display: block; margin-top: 12px; }
+    input { width: 100%; padding: 8px; margin-top: 4px; }
+    button { margin-top: 16px; padding: 10px; width: 100%; cursor: pointer; }
+    .msg { margin-top: 16px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>活動報名</h1>
+
+  <div class="info">
+    <div>總名額：<span id="total">--</span></div>
+    <div>已報名：<span id="used">--</span></div>
+    <div>剩餘名額：<span id="left">--</span></div>
+  </div>
+
+  <form id="regForm">
+    <label>
+      姓名
+      <input type="text" name="name" required>
+    </label>
+    <label>
+      Email
+      <input type="email" name="email" required>
+    </label>
+    <button type="submit">送出報名</button>
+  </form>
+
+  <div class="msg" id="msg"></div>
+
+  <script>
+    const totalSpan = document.getElementById('total');
+    const usedSpan = document.getElementById('used');
+    const leftSpan = document.getElementById('left');
+    const msg = document.getElementById('msg');
+    const form = document.getElementById('regForm');
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        totalSpan.textContent = data.total;
+        usedSpan.textContent = data.used;
+        leftSpan.textContent = data.left;
+      } catch (e) {
+        msg.textContent = '目前無法取得名額資訊，請稍後再試。';
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.textContent = '送出中...';
+
+      const formData = new FormData(form);
+      const body = {
+        name: formData.get('name'),
+        email: formData.get('email')
+      };
+
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          msg.textContent = data.error || '報名失敗，請稍後再試。';
+          return;
+        }
+
+        msg.textContent = data.message;
+        // 更新最新人數
+        totalSpan.textContent = data.total;
+        usedSpan.textContent = data.used;
+        leftSpan.textContent = data.left;
+
+        if (data.success) {
+          form.reset();
+        }
+      } catch (e) {
+        msg.textContent = '系統錯誤，請稍後再試。';
+      }
+    });
+
+    // 一進來先抓狀態
+    fetchStatus();
+  </script>
+</body>
+</html>
