@@ -1,6 +1,6 @@
 export async function onRequest(context) {
   const { request, env } = context;
-  const TOTAL = 50;
+  const TOTAL = 1;
 
   if (request.method !== "POST") {
     return new Response(
