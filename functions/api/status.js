@@ -1,7 +1,7 @@
 export async function onRequest(context) {
   const { env } = context;
 
-  const TOTAL = 50;
+  const TOTAL = 36;
 
   try {
     const { results } = await env.DB
