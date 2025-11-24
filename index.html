@@ -47,10 +47,21 @@
           姓名
           <input type="text" name="name" required>
         </label>
-        <label>
-          Email
-          <input type="email" name="email" required>
-        </label>
+        <div style="display: flex; justify-content: space-between;">
+          <label>飲品三擇一： </label>
+          <label>
+            <input type="radio" name="drink" value="coffee" required>
+            咖啡
+          </label>
+          <label>
+            <input type="radio" name="drink" value="tea">
+            紅茶
+          </label>
+          <label>
+            <input type="radio" name="drink" value="milk">
+            牛奶
+          </label>
+        </div>
         <label>
           電話
           <input type="text" name="phone">

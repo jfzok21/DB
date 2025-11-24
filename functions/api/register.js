@@ -13,9 +13,10 @@ export async function onRequest(context) {
   const name  = (body.name  || "").trim();
   const email = (body.email || "").trim();
   const phone = (body.phone || "").trim();
+  const drink = (body.drink || "").trim();   // ← ★★ 新增
   const now   = Date.now();
 
-  // 驗證：至少要有姓名 + Email
+  // 驗證
   if (!name || !email) {
     return new Response(
       JSON.stringify({ error: "姓名和 Email 必填" }),
@@ -23,7 +24,14 @@ export async function onRequest(context) {
     );
   }
 
-  // 目前已報名人數
+  if (!drink) {
+    return new Response(
+      JSON.stringify({ error: "請選擇飲品" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  // 名額
   const countRes = await env.DB.prepare(
     "SELECT COUNT(*) AS used FROM registrations"
   ).all();
@@ -44,17 +52,15 @@ export async function onRequest(context) {
 
   try {
     await env.DB.prepare(
-      "INSERT INTO registrations (name, email, phone, created_at) VALUES (?, ?, ?, ?)"
-    ).bind(name, email, phone, now).run();
+      "INSERT INTO registrations (name, email, phone, drink, created_at) VALUES (?, ?, ?, ?, ?)"
+    ).bind(name, email, phone, drink, now).run();
   } catch (e) {
-    // 如果你有 UNIQUE(email) index，重複 email 會進到這裡
     return new Response(
       JSON.stringify({ success: false, error: "Email 已存在" }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
-  // 寫入後再查一次最新人數
   const afterRes = await env.DB.prepare(
     "SELECT COUNT(*) AS used FROM registrations"
   ).all();
@@ -67,7 +73,8 @@ export async function onRequest(context) {
       message: "報名成功",
       total: TOTAL,
       used: newUsed,
-      left
+      left,
+      drink   // 可選：回傳你選的飲品
     }),
     { status: 200, headers: { "Content-Type": "application/json" } }
   );

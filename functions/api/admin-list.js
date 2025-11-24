@@ -3,7 +3,7 @@ export async function onRequest(context) {
 
   const { results } = await env.DB
     .prepare(`
-      SELECT id, name, email, phone, created_at
+      SELECT id, name, email, phone, drink, created_at
       FROM registrations
       ORDER BY id DESC
     `)
@@ -14,6 +14,7 @@ export async function onRequest(context) {
     name: row.name,
     email: row.email,
     phone: row.phone,
+    drink: row.drink || "",                 // ← ★ 加這個
     created_at: new Date(row.created_at).toLocaleString("zh-TW")
   }));
 

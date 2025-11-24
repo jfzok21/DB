@@ -55,14 +55,14 @@
       <tr>
         <th>ID</th>
         <th>姓名</th>
-        <th>Email</th>
+        <th>飲品（三則一）</th>
         <th>報名時間</th>
         <th>電話</th>
         <th>操作</th>
       </tr>
     </thead>
     <tbody id="tbody">
-      <tr><td colspan="4">讀取中...</td></tr>
+      <tr><td colspan="6">讀取中...</td></tr>
     </tbody>
   </table>
 
@@ -86,7 +86,7 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="4">目前沒有任何報名資料</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6">目前沒有任何報名資料</td></tr>';
           return;
         }
 
@@ -95,7 +95,7 @@
           tr.innerHTML = `
             <td>${row.id}</td>
             <td>${row.name}</td>
-            <td>${row.email}</td>
+            <td>${row.drink || ""}</td>
             <td>${row.created_at}</td>
             <td>${row.phone || ""}</td>
             <td><button data-id="${row.id}">刪除</button></td>

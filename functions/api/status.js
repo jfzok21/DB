@@ -22,3 +22,32 @@ export async function onRequest(context) {
     );
   }
 }
+
+const { results } = await env.DB
+  .prepare(`
+    SELECT 
+      COUNT(*) AS used,
+      SUM(CASE WHEN drink = 'coffee' THEN 1 ELSE 0 END) AS coffee,
+      SUM(CASE WHEN drink = 'tea'    THEN 1 ELSE 0 END) AS tea,
+      SUM(CASE WHEN drink = 'milk'   THEN 1 ELSE 0 END) AS milk
+    FROM registrations
+  `)
+  .all();
+
+const row = results[0] || {};
+const used = row.used || 0;
+const left = Math.max(TOTAL - used, 0);
+
+return new Response(
+  JSON.stringify({
+    total: TOTAL,
+    used,
+    left,
+    drinks: {
+      coffee: row.coffee || 0,
+      tea: row.tea || 0,
+      milk: row.milk || 0
+    }
+  }),
+  { headers: { "Content-Type": "application/json" } }
+);
